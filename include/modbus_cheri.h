@@ -10,8 +10,6 @@
 
 #if !__has_feature(capabilities)
 #warning libmodbus_cheri only provides a pass-through if CHERI capabilities are not supported
-#else
-#include "cheri_helper.h"
 #endif
 
 /* for modbus */

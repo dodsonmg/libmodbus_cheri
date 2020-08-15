@@ -1,9 +1,6 @@
 #ifndef _CHERI_HELPER_H_
 #define _CHERI_HELPER_H_
 
-#include <cheriintrin.h>
-// #include "libcheri_type.h"
-
 #define CHERI_PRINT_CAP(cap)                            \
         printf("%-20s: %-16s t:%d s:%d p:%08x "                        \
                "b:%016jx l:%016zx o:%jx type:%lx\n",            \

@@ -4,14 +4,11 @@
 #include <stdio.h>
 
 /* For CHERI */
-#ifndef __has_feature
-#define __has_feature(x) 0
-#endif
-
-#if !__has_feature(capabilities)
-#warning libmodbus_cheri only provides a pass-through if CHERI capabilities are not supported
-#else
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheric.h>
 #include "cheri_helper.h"
+#else
+#warning libmodbus_cheri only provides a pass-through if CHERI capabilities are not supported
 #endif
 
 /* for modbus */

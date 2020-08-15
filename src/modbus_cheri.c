@@ -72,11 +72,7 @@ modbus_mapping_t* modbus_mapping_new_start_address_cheri(
     tab_registers_ = mb_mapping->tab_registers;
 
     // may need to read and write to the string (used for Macaroons)
-#if defined(MACAROONS_LAYER)
     mb_mapping->tab_string = (uint8_t *)cheri_perms_and(mb_mapping->tab_string, CHERI_PERM_LOAD | CHERI_PERM_STORE);
-#else
-    mb_mapping->tab_string = NULL;
-#endif
     tab_string_ = mb_mapping->tab_string;
 
     mb_mapping_ = mb_mapping;
@@ -221,6 +217,7 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
         print_modbus_decompose_request(ctx, req);
         printf("\n");
         print_mb_mapping(mb_mapping);
+        printf("\n");
     }
 
     return 0;

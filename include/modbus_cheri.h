@@ -5,8 +5,7 @@
 
 /* For CHERI */
 #ifdef __CHERI_PURE_CAPABILITY__
-#include <cheric.h>
-#include "cheri_helper.h"
+#include <cheriintrin.h>
 #else
 #warning libmodbus_cheri only provides a pass-through if CHERI capabilities are not supported
 #endif

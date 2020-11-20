@@ -119,8 +119,11 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
     {
     case MODBUS_FC_READ_COILS:
     {
-        /* we only need to be able to read coil (tab_bits) values */
+        /* we need to be able to read coil (tab_bits) values */
         mb_mapping->tab_bits = (uint8_t *)cheri_perms_and(tab_bits_, CHERI_PERM_LOAD);
+
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
 
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);
@@ -132,6 +135,9 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
         /* we only need to be able to read discrete inputs (tab_input_bits) */
         mb_mapping->tab_input_bits = (uint8_t *)cheri_perms_and(tab_input_bits_, CHERI_PERM_LOAD);
 
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
+
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);
     }
@@ -142,6 +148,9 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
         /* we only need to be able to read holding registers (tab_registers) */
         mb_mapping->tab_registers = (uint16_t *)cheri_perms_and(tab_registers_, CHERI_PERM_LOAD);
 
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
+
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);
     }
@@ -151,6 +160,9 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
     {
         /* we only need to be able to read input registers (tab_input_registers) */
         mb_mapping->tab_input_registers = (uint16_t *)cheri_perms_and(tab_input_registers_, CHERI_PERM_LOAD);
+
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
 
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);
@@ -163,6 +175,9 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
         /* we only need to be able to store coil (tab_bits) values */
         mb_mapping->tab_bits = (uint8_t *)cheri_perms_and(tab_bits_, CHERI_PERM_STORE);
 
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
+
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);
     }
@@ -173,6 +188,9 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
     {
         /* we only need to be able to write holding registers (tab_registers) */
         mb_mapping->tab_registers = (uint16_t *)cheri_perms_and(tab_registers_, CHERI_PERM_STORE);
+
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
 
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);
@@ -189,6 +207,9 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
     {
         /* we only need to be able to read and write holding registers (tab_registers) */
         mb_mapping->tab_registers = (uint16_t *)cheri_perms_and(tab_registers_, CHERI_PERM_LOAD | CHERI_PERM_STORE);
+
+        /* we need to be able to read macaroon (tab_string) values */
+        mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
 
         /* revert mb_mapping to LOAD only */
         mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_, CHERI_PERM_LOAD | CHERI_PERM_LOAD_CAP);

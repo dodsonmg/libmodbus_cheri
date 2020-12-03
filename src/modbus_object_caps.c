@@ -38,7 +38,7 @@
  * This allows reducing permissions to the structure and members before sending
  * them to libmodbus:modbus_process_request.
  * */
-#if defined(MODBUS_OBJECT_CAPABILITIES)
+#if defined(MODBUS_OBJECT_CAPS)
 static uint8_t *tab_bits_;
 static uint8_t *tab_input_bits_;
 static uint16_t *tab_input_registers_;
@@ -79,7 +79,7 @@ modbus_mapping_t* modbus_mapping_new_start_address_object_caps(
         start_registers, nb_registers,
         start_input_registers, nb_input_registers);
 
-#if defined(MODBUS_OBJECT_CAPABILITIES)
+#if defined(MODBUS_OBJECT_CAPS)
     // may need to be able to read and write to coils
     mb_mapping->tab_bits = (uint8_t *)cheri_perms_and(mb_mapping->tab_bits, CHERI_PERM_LOAD | CHERI_PERM_STORE);
     tab_bits_ = mb_mapping->tab_bits;
@@ -121,7 +121,7 @@ int modbus_preprocess_request_object_caps(modbus_t *ctx, uint8_t *req, modbus_ma
         printf("\n");
     }
 
-#if defined(MODBUS_OBJECT_CAPABILITIES)
+#if defined(MODBUS_OBJECT_CAPS)
     /* need to be able to STORE to modify mb_mapping permissions */
     mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_,
         CHERI_PERM_STORE | CHERI_PERM_STORE_CAP | CHERI_PERM_STORE_LOCAL_CAP);

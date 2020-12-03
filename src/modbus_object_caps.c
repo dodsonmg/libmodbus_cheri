@@ -1,4 +1,31 @@
-#include "modbus_cheri.h"
+/*-
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2020 Michael Dodson
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+*/
+
+#include "modbus_object_caps.h"
 
 /*********
  * GLOBALS
@@ -11,7 +38,7 @@
  * This allows reducing permissions to the structure and members before sending
  * them to libmodbus:modbus_process_request.
  * */
-#if defined(CHERI_LAYER)
+#if defined(MODBUS_OBJECT_CAPABILITIES)
 static uint8_t *tab_bits_;
 static uint8_t *tab_input_bits_;
 static uint16_t *tab_input_registers_;
@@ -34,7 +61,7 @@ static modbus_mapping_t *mb_mapping_;
  * pointer to the structure itself can only load and store the data
  * and pointers within the structure
  * */
-modbus_mapping_t* modbus_mapping_new_start_address_cheri(
+modbus_mapping_t* modbus_mapping_new_start_address_object_caps(
     modbus_t *ctx,
     unsigned int start_bits, unsigned int nb_bits,
     unsigned int start_input_bits, unsigned int nb_input_bits,
@@ -42,7 +69,7 @@ modbus_mapping_t* modbus_mapping_new_start_address_cheri(
     unsigned int start_input_registers, unsigned int nb_input_registers)
 {
     if(modbus_get_debug(ctx)) {
-        print_shim_info("cheri_shim", __FUNCTION__);
+        print_shim_info("object capabilities shim", __FUNCTION__);
     }
 
     modbus_mapping_t* mb_mapping;
@@ -52,18 +79,16 @@ modbus_mapping_t* modbus_mapping_new_start_address_cheri(
         start_registers, nb_registers,
         start_input_registers, nb_input_registers);
 
-#if defined(CHERI_LAYER)
+#if defined(MODBUS_OBJECT_CAPABILITIES)
     // may need to be able to read and write to coils
     mb_mapping->tab_bits = (uint8_t *)cheri_perms_and(mb_mapping->tab_bits, CHERI_PERM_LOAD | CHERI_PERM_STORE);
     tab_bits_ = mb_mapping->tab_bits;
 
     // generally, only need to read discrete inputs; however, need to write to initialise
-    // TODO: remove CHERI_PERM_STORE after initialisation??
     mb_mapping->tab_input_bits = (uint8_t *)cheri_perms_and(mb_mapping->tab_input_bits, CHERI_PERM_LOAD | CHERI_PERM_STORE);
     tab_input_bits_ = mb_mapping->tab_input_bits;
 
     // generally, only need to read input registers; however, need to write to initialise
-    // TODO: remove CHERI_PERM_STORE after initialisation??
     mb_mapping->tab_input_registers = (uint16_t *)cheri_perms_and(mb_mapping->tab_input_registers, CHERI_PERM_LOAD | CHERI_PERM_STORE);
     tab_input_registers_ = mb_mapping->tab_input_registers;
 
@@ -87,16 +112,16 @@ modbus_mapping_t* modbus_mapping_new_start_address_cheri(
  * preprocesses a client request, modifies the server
  * state (if applicable) and returns to the caller
  * */
-int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_t *mb_mapping)
+int modbus_preprocess_request_object_caps(modbus_t *ctx, uint8_t *req, modbus_mapping_t *mb_mapping)
 {
     int debug = modbus_get_debug(ctx);
 
     if(debug) {
-        print_shim_info("cheri_shim", __FUNCTION__);
+        print_shim_info("object capabilities shim", __FUNCTION__);
         printf("\n");
     }
 
-#if defined(CHERI_LAYER)
+#if defined(MODBUS_OBJECT_CAPABILITIES)
     /* need to be able to STORE to modify mb_mapping permissions */
     mb_mapping = (modbus_mapping_t *)cheri_perms_and(mb_mapping_,
         CHERI_PERM_STORE | CHERI_PERM_STORE_CAP | CHERI_PERM_STORE_LOCAL_CAP);
@@ -108,7 +133,7 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
     mb_mapping->tab_registers = NULL;
 
     /* for Macaroons, set tab_string permissions to LOAD, otherwise to zero */
-#if defined(MACAROONS_LAYER)
+#if defined(MODBUS_NETWORK_CAPABILITIES)
     mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
 #else
     mb_mapping->tab_string = NULL;
@@ -247,12 +272,12 @@ int modbus_preprocess_request_cheri(modbus_t *ctx, uint8_t *req, modbus_mapping_
 /**
  * This is a (mostly) empty function used to measure the overhead of calling into this library
  * */
-int modbus_preprocess_request_cheri_baseline(modbus_t *ctx, uint8_t *req, modbus_mapping_t *mb_mapping)
+int modbus_preprocess_request_object_caps_stub(modbus_t *ctx, uint8_t *req, modbus_mapping_t *mb_mapping)
 {
     int debug = modbus_get_debug(ctx);
 
     if(debug) {
-        print_shim_info("cheri_shim", __FUNCTION__);
+        print_shim_info("object capabilities shim", __FUNCTION__);
         printf("\n");
 
         /* Print the decomposed request and the resulting mb_mapping pointers */

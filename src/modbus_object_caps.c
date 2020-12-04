@@ -133,7 +133,7 @@ int modbus_preprocess_request_object_caps(modbus_t *ctx, uint8_t *req, modbus_ma
     mb_mapping->tab_registers = NULL;
 
     /* for Macaroons, set tab_string permissions to LOAD, otherwise to zero */
-#if defined(MODBUS_NETWORK_CAPABILITIES)
+#if defined(MODBUS_NETWORK_CAPS)
     mb_mapping->tab_string = (uint8_t *)cheri_perms_and(tab_string_, CHERI_PERM_LOAD);
 #else
     mb_mapping->tab_string = NULL;
